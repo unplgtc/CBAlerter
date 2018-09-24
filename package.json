@@ -1,0 +1,29 @@
+{
+  "name": "@unplgtc/cbalerter",
+  "version": "0.0.0",
+  "description": "Standardized webhook alerting object for Node applications",
+  "main": "src/CBAlerter.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unplgtc/CBAlerter.git"
+  },
+  "author": "Alex Guyot <guyot@unapologetic.io> (https://unapologetic.io)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unplgtc/CBAlerter/issues"
+  },
+  "homepage": "https://github.com/unplgtc/CBAlerter#readme",
+  "devDependencies": {
+    "jest": "^23.4.2"
+  },
+  "dependencies": {
+    "@unplgtc/standarderror": "0.0.1",
+    "request": "^2.87.0"
+  },
+  "directories": {
+    "test": "test"
+  }
+}
