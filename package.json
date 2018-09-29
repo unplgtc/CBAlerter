@@ -1,6 +1,6 @@
 {
   "name": "@unplgtc/cbalerter",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Standardized webhook alerting object for Node applications",
   "main": "src/CBAlerter.js",
   "scripts": {

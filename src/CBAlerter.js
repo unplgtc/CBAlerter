@@ -4,18 +4,22 @@ const request = require('request');
 const StandardError = require('@unplgtc/standarderror');
 
 const CBAlerter = {
-	alert(payload, webhookName = 'default') {
-		if (!this.webhooks[webhookName]) {
-			return StandardError.cbalerter_404;
+	alert(level, key, data, options, err) {
+		var webhook = options.webhook ? options.webhook : 'default';
+		if (!this.webhooks[webhook]) {
+			return StandardError.CBAlerter_404;
 		}
-		return this.postToWebhook(payload, webhookName);
+		return this.postToWebhook(webhook, level, key, data, options, err);
 	},
 
-	addWebhook(url, name = 'default') {
+	addWebhook(builder, name = 'default') {
 		if (this.webhooks[name]) {
-			return StandardError.cbalerter_409;
+			return StandardError.CBAlerter_409;
 		}
-		this.webhooks[name] = {url: url};
+		if (typeof builder != 'function' || builder.length < 5) {
+			return StandardError.CBAlerter_400;
+		}
+		this.webhooks[name] = builder;
 		return true;
 	}
 }
@@ -23,25 +27,25 @@ const CBAlerter = {
 const Internal = {
 	webhooks: {},
 
-	postToWebhook(payload, name) {
-		request.post({
-			url: this.webhooks[name].url,
-			body: payload,
-			json: true
-		}, function(err, response, body) {
-			if (!err) {
-				console.log(body);
-			} else {
-				console.error('Error: ' + response.statusCode);
+	postToWebhook(webhook, level, key, data, options, err) {
+		request.post(
+			this.webhooks[webhook](level, key, data, options, err),
+			function(err, response, body) {
+				if (!err) {
+					console.log(body);
+				} else {
+					console.error('Error: ' + response.statusCode);
+				}
 			}
-		});
+		);
 		return true;
 	}
 }
 
 StandardError.add([
-	{code: 'cbalerter_404', domain: 'CBAlerter', title: 'Not Found', message: 'A webhook with the requested name could not be found'},
-	{code: 'cbalerter_409', domain: 'CBAlerter', title: 'Conflict', message: 'A webhook with the given name already exists'}
+	{code: 'CBAlerter_400', domain: 'CBAlerter', title: 'Bad Rquest', message: 'The requested builder was not a function or accepted fewer than the 5 required arguments (level, key, data, options, err)'},
+	{code: 'CBAlerter_404', domain: 'CBAlerter', title: 'Not Found', message: 'A webhook with the requested name could not be found'},
+	{code: 'CBAlerter_409', domain: 'CBAlerter', title: 'Conflict', message: 'A webhook with the given name already exists'}
 ]);
 
 Object.setPrototypeOf(CBAlerter, Internal);
