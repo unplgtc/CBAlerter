@@ -1,7 +1,7 @@
 'use strict';
 
 const request = require('request');
-const StandardError = require('@unplgtc/standarderror');
+const StandardError = require('@unplgtc/standard-error');
 
 const CBAlerter = {
 	alert(level, key, data, options, err) {
