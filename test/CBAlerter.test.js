@@ -1,8 +1,14 @@
 'use strict';
 
+const _ = require('@unplgtc/standard-promise');
 const CBAlerter = require('./../src/CBAlerter');
 const StandardError = require('@unplgtc/standard-error');
-const request = require('request');
+const HttpRequest = require('@unplgtc/http-request');
+
+HttpRequest.build = jest.fn();
+HttpRequest.build.mockReturnValue(HttpRequest);
+HttpRequest.post = jest.fn();
+HttpRequest.post.mockResolvedValue(_(Promise.resolve()));
 
 var builder = function(level, key, data, options, err) {
 	return {
@@ -30,10 +36,10 @@ var moreMockedArgs = ['ERROR', 'another_test_key', {text: 'testing again'}, {ale
 
 test('Can\'t trigger a default alert before a default webhook has been added', async() => {
 	// Execute
-	var res = CBAlerter.alert(...mockedArgs);
+	var res = await CBAlerter.alert(...mockedArgs);
 
 	// Test
-	expect(res).toBe(StandardError.CBAlerter_404);
+	expect(res.err).toBe(StandardError.CBAlerter_404);
 });
 
 test('Can add a default webhook', async() => {
@@ -45,15 +51,13 @@ test('Can add a default webhook', async() => {
 });
 
 test('Can send an alert via the default webhook', async() => {
-	// Setup
-	request.post = jest.fn();
-
 	// Execute
-	var sent = CBAlerter.alert(...mockedArgs);
+	var sent = await CBAlerter.alert(...mockedArgs);
 
 	// Test
-	expect(sent).toBe(true);
-	expect(request.post).toHaveBeenCalledWith(builder(...mockedArgs), expect.any(Function));
+	expect(sent.err).toBe(undefined);
+	expect(HttpRequest.build).toHaveBeenCalledWith(builder(...mockedArgs));
+	expect(HttpRequest.post).toHaveBeenCalled();
 });
 
 test('Can\'t add a second default webhook', async() => {
@@ -73,15 +77,13 @@ test('Can add a named webhook', async() => {
 });
 
 test('Can send an alert via a named webhook', async() => {
-	// Setup
-	request.post = jest.fn();
-
 	// Execute
-	var sent = CBAlerter.alert(...moreMockedArgs);
+	var sent = await CBAlerter.alert(...moreMockedArgs);
 
 	// Test
-	expect(sent).toBe(true);
-	expect(request.post).toHaveBeenCalledWith(anotherBuilder(...moreMockedArgs), expect.any(Function));
+	expect(sent.err).toBe(undefined);
+	expect(HttpRequest.build).toHaveBeenCalledWith(anotherBuilder(...moreMockedArgs));
+	expect(HttpRequest.post).toHaveBeenCalled();
 });
 
 test('Can\'t add a named webhook with an existing name', async() => {
