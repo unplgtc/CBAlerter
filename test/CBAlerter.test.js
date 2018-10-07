@@ -5,10 +5,8 @@ const CBAlerter = require('./../src/CBAlerter');
 const StandardError = require('@unplgtc/standard-error');
 const HttpRequest = require('@unplgtc/http-request');
 
-HttpRequest.build = jest.fn();
-HttpRequest.build.mockReturnValue(HttpRequest);
-HttpRequest.post = jest.fn();
-HttpRequest.post.mockResolvedValue(_(Promise.resolve()));
+HttpRequest.build = jest.fn(() => HttpRequest);
+HttpRequest.post = jest.fn(() => _(Promise.resolve()));
 
 var builder = function(level, key, data, options, err) {
 	return {
