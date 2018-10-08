@@ -1,6 +1,5 @@
 'use strict';
 
-const _ = require('@unplgtc/standard-promise');
 const HttpRequest = require('@unplgtc/http-request');
 const StandardError = require('@unplgtc/standard-error');
 
@@ -8,9 +7,9 @@ const CBAlerter = {
 	alert(level, key, data, options, err) {
 		var webhook = options.webhook ? options.webhook : 'default';
 		if (!this.webhooks[webhook]) {
-			return _(Promise.reject(StandardError.CBAlerter_404));
+			return Promise.reject(StandardError.CBAlerter_404);
 		}
-		return _(this.postToWebhook(webhook, level, key, data, options, err));
+		return this.postToWebhook(webhook, level, key, data, options, err);
 	},
 
 	addWebhook(builder, name = 'default') {
