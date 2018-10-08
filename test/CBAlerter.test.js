@@ -1,12 +1,11 @@
 'use strict';
 
-const _ = require('@unplgtc/standard-promise');
 const CBAlerter = require('./../src/CBAlerter');
 const StandardError = require('@unplgtc/standard-error');
 const HttpRequest = require('@unplgtc/http-request');
 
 HttpRequest.build = jest.fn(() => HttpRequest);
-HttpRequest.post = jest.fn(() => _(Promise.resolve()));
+HttpRequest.post = jest.fn(() => Promise.resolve());
 
 var builder = function(level, key, data, options, err) {
 	return {
@@ -34,10 +33,12 @@ var moreMockedArgs = ['ERROR', 'another_test_key', {text: 'testing again'}, {ale
 
 test('Can\'t trigger a default alert before a default webhook has been added', async() => {
 	// Execute
-	var res = await CBAlerter.alert(...mockedArgs);
+	var resErr;
+	var res = await CBAlerter.alert(...mockedArgs)
+		.catch((err) => { resErr = err; });
 
 	// Test
-	expect(res.err).toBe(StandardError.CBAlerter_404);
+	expect(resErr).toBe(StandardError.CBAlerter_404);
 });
 
 test('Can add a default webhook', async() => {
@@ -50,10 +51,12 @@ test('Can add a default webhook', async() => {
 
 test('Can send an alert via the default webhook', async() => {
 	// Execute
-	var sent = await CBAlerter.alert(...mockedArgs);
+	var resErr;
+	var res = await CBAlerter.alert(...mockedArgs)
+		.catch((err) => { resErr = err; });
 
 	// Test
-	expect(sent.err).toBe(undefined);
+	expect(resErr).toBe(undefined);
 	expect(HttpRequest.build).toHaveBeenCalledWith(builder(...mockedArgs));
 	expect(HttpRequest.post).toHaveBeenCalled();
 });
@@ -76,10 +79,12 @@ test('Can add a named webhook', async() => {
 
 test('Can send an alert via a named webhook', async() => {
 	// Execute
-	var sent = await CBAlerter.alert(...moreMockedArgs);
+	var resErr;
+	var res = await CBAlerter.alert(...moreMockedArgs)
+		.catch((err) => { resErr = err; });
 
 	// Test
-	expect(sent.err).toBe(undefined);
+	expect(resErr).toBe(undefined);
 	expect(HttpRequest.build).toHaveBeenCalledWith(anotherBuilder(...moreMockedArgs));
 	expect(HttpRequest.post).toHaveBeenCalled();
 });
