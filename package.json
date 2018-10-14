@@ -1,7 +1,7 @@
 {
   "name": "@unplgtc/cbalerter",
-  "version": "0.1.2",
-  "description": "Standardized webhook alerting object for Node applications",
+  "version": "1.0.0",
+  "description": "Webhook alerting object for Node applications and CBLogger",
   "main": "src/CBAlerter.js",
   "scripts": {
     "test": "jest"
@@ -20,8 +20,8 @@
     "jest": "^23.4.2"
   },
   "dependencies": {
-    "@unplgtc/standard-error": "0.1.0",
-    "@unplgtc/http-request": "0.2.1"
+    "@unplgtc/standard-error": "1.0.0",
+    "@unplgtc/http-request": "1.0.0"
   },
   "directories": {
     "test": "test"
