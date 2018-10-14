@@ -7,17 +7,17 @@ const CBAlerter = {
 	alert(level, key, data, options, err) {
 		var webhook = options.webhook ? options.webhook : 'default';
 		if (!this.webhooks[webhook]) {
-			return Promise.reject(StandardError.CBAlerter_404);
+			return Promise.reject(StandardError.CBAlerter_404());
 		}
 		return this.postToWebhook(webhook, level, key, data, options, err);
 	},
 
 	addWebhook(builder, name = 'default') {
 		if (this.webhooks[name]) {
-			return StandardError.CBAlerter_409;
+			return StandardError.CBAlerter_409();
 		}
 		if (typeof builder != 'function' || builder.length < 5) {
-			return StandardError.CBAlerter_400;
+			return StandardError.CBAlerter_400();
 		}
 		this.webhooks[name] = builder;
 		return true;

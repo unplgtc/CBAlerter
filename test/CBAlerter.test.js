@@ -29,7 +29,7 @@ var anotherBuilder = function(level, key, data, options, err) {
 }
 var webhookName = 'some_webhook_name';
 var mockedArgs = ['DEBUG', 'test_key', {text: 'testing'}, {alert: true}];
-var moreMockedArgs = ['ERROR', 'another_test_key', {text: 'testing again'}, {alert: true, webhook: webhookName}, StandardError[500]];
+var moreMockedArgs = ['ERROR', 'another_test_key', {text: 'testing again'}, {alert: true, webhook: webhookName}, StandardError.http_500()];
 
 test('Can\'t trigger a default alert before a default webhook has been added', async() => {
 	// Execute
@@ -38,7 +38,7 @@ test('Can\'t trigger a default alert before a default webhook has been added', a
 		.catch((err) => { resErr = err; });
 
 	// Test
-	expect(resErr).toBe(StandardError.CBAlerter_404);
+	expect(resErr).toEqual(StandardError.CBAlerter_404());
 });
 
 test('Can add a default webhook', async() => {
@@ -66,7 +66,7 @@ test('Can\'t add a second default webhook', async() => {
 	var success = CBAlerter.addWebhook(anotherBuilder);
 
 	// Test
-	expect(success).toBe(StandardError.CBAlerter_409);
+	expect(success).toEqual(StandardError.CBAlerter_409());
 });
 
 test('Can add a named webhook', async() => {
@@ -94,5 +94,5 @@ test('Can\'t add a named webhook with an existing name', async() => {
 	var success = CBAlerter.addWebhook(builder, webhookName);
 
 	// Test
-	expect(success).toBe(StandardError.CBAlerter_409);
+	expect(success).toEqual(StandardError.CBAlerter_409());
 });
