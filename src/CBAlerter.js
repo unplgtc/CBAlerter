@@ -16,7 +16,7 @@ const CBAlerter = {
 		if (this.webhooks[name]) {
 			return StandardError.CBAlerter_409();
 		}
-		if (typeof builder != 'function' || builder.length < 5) {
+		if (typeof builder != 'function') {
 			return StandardError.CBAlerter_400();
 		}
 		this.webhooks[name] = builder;
