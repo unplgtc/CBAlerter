@@ -1,24 +1,57 @@
-'use strict';
+import HttpRequest from '@unplgtc/http-request';
+import { createErrors } from '@unplgtc/standard-error';
 
-const HttpRequest = require('@unplgtc/http-request');
-const StandardError = require('@unplgtc/standard-error');
+const [ AlreadyExistsError, NotFoundError ] = createErrors([
+	{
+		name: 'AlreadyExistsError',
+		message: 'A webhook with the requested name \'``requestedName``\' already exists',
+		properties: [ 'requestedName' ]
+	},
+	{
+		name: 'NotFoundError',
+		message: 'A webhook with the requested name \'``requestedName``\' could not be found',
+		properties: [ 'requestedName' ]
+	}
+]);
 
 const CBAlerter = {
 	alert(level, key, data, options, err) {
-		var webhook = options.webhook ? options.webhook : 'default';
-		if (!this.webhooks[webhook]) {
-			return Promise.reject(StandardError.CBAlerter_404());
+		if (!options) {
+			options = {};
 		}
+
+		if (options instanceof Error) {
+			options = {};
+			err = options;
+		}
+
+		const webhook = options.webhook ? options.webhook : 'default';
+
+		if (!this.webhooks[webhook]) {
+			throw new NotFoundError(webhook);
+		}
+
 		return this.postToWebhook(webhook, level, key, data, options, err);
 	},
 
-	addWebhook(builder, name = 'default') {
+	addWebhook(name, builder) {
+		if (!builder && typeof name === 'function') {
+			builder = name;
+			name = 'default';
+		}
+
+		if (typeof builder !== 'function') {
+			throw new TypeError('The requested CBAlerter payload builder is not a function');
+		}
+
+		if (typeof name !== 'string') {
+			name = 'default';
+		}
+
 		if (this.webhooks[name]) {
-			return StandardError.CBAlerter_409();
+			throw new AlreadyExistsError(name);
 		}
-		if (typeof builder != 'function') {
-			return StandardError.CBAlerter_400();
-		}
+
 		this.webhooks[name] = builder;
 		return true;
 	}
@@ -28,18 +61,12 @@ const Internal = {
 	webhooks: {},
 
 	postToWebhook(webhook, level, key, data, options, err) {
-		return HttpRequest.create()
+		return Object.create(HttpRequest)
 			.build(this.webhooks[webhook](level, key, data, options, err))
-			.post()
+			.post();
 	}
 }
 
-StandardError.add([
-	{code: 'CBAlerter_400', domain: 'CBAlerter', title: 'Bad Rquest', message: 'The requested builder was not a function or accepted fewer than the 5 required arguments (level, key, data, options, err)'},
-	{code: 'CBAlerter_404', domain: 'CBAlerter', title: 'Not Found', message: 'A webhook with the requested name could not be found'},
-	{code: 'CBAlerter_409', domain: 'CBAlerter', title: 'Conflict', message: 'A webhook with the given name already exists'}
-]);
-
 Object.setPrototypeOf(CBAlerter, Internal);
 
-module.exports = CBAlerter;
+export default CBAlerter;
