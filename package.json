@@ -1,6 +1,6 @@
 {
   "name": "@unplgtc/cbalerter",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Webhook alerting object for Node applications and CBLogger",
   "type": "module",
   "exports": "./src/CBAlerter.js",
