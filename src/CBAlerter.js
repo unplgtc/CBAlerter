@@ -4,11 +4,15 @@ import { createErrors } from '@unplgtc/standard-error';
 const [ AlreadyExistsError, NotFoundError ] = createErrors([
 	{
 		name: 'AlreadyExistsError',
+		namespace: 'CBAlerter',
+		namespaceOnly: true,
 		message: 'A webhook with the requested name \'``requestedName``\' already exists',
 		properties: [ 'requestedName' ]
 	},
 	{
 		name: 'NotFoundError',
+		namespace: 'CBAlerter',
+		namespaceOnly: true,
 		message: 'A webhook with the requested name \'``requestedName``\' could not be found',
 		properties: [ 'requestedName' ]
 	}
