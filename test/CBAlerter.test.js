@@ -3,7 +3,8 @@ import HttpRequest from '@unplgtc/http-request';
 import { jest } from '@jest/globals';
 
 import Errors from '@unplgtc/standard-error';
-const { AlreadyExistsError, NotFoundError, HttpError } = Errors;
+const { AlreadyExistsError, NotFoundError } = Errors.CBAlerter;
+const { HttpError } = Errors;
 
 HttpRequest.build = jest.fn(() => HttpRequest);
 HttpRequest.post = jest.fn(() => Promise.resolve());
